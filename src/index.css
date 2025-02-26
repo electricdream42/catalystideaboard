@@ -2,274 +2,203 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
+/* Fix for font-montserrat */
+.font-montserrat {
+  font-family: 'Montserrat', sans-serif;
+}
+
+body {
+  @apply bg-white text-slate-800 font-sans transition-colors duration-200;
+}
+
+body.dark {
+  @apply bg-slate-900 text-white;
+}
+
+/* Hero section sizing */
+.hero-section {
+  @apply py-6 md:py-10 !important;
+}
+
+/* Main content sizing */
+.main-content {
+  @apply py-8 md:py-12 !important;
+}
+
+/* Dark mode text visibility improvements */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  @apply text-white;
+}
+
+.dark p, .dark span, .dark div {
+  @apply text-white;
+}
+
+.dark label, .dark .label {
+  @apply text-slate-200;
+}
+
+.dark a:not(.btn) {
+  @apply text-purple-300 hover:text-purple-200;
+}
+
+/* Input styles with dark mode support */
+.input {
+  @apply px-4 py-2 rounded-lg border border-slate-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all duration-200 bg-white text-slate-800 w-full;
+  @apply dark:bg-slate-800 dark:border-slate-700 dark:text-white dark:focus:ring-purple-900 dark:focus:border-purple-600 dark:placeholder-slate-400;
+}
+
+textarea.input {
+  @apply min-h-[120px] resize-y;
+}
+
+/* Button styles */
+.btn {
+  @apply px-6 py-2 rounded-lg font-medium transition-all duration-200 inline-flex items-center justify-center;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-primary {
+  @apply bg-purple-600 hover:bg-purple-700 text-white focus:ring-purple-500;
+  @apply dark:bg-purple-700 dark:hover:bg-purple-600;
+}
+
+.btn-secondary {
+  @apply bg-teal-600 hover:bg-teal-700 text-white focus:ring-teal-500;
+  @apply dark:bg-teal-700 dark:hover:bg-teal-600;
+}
+
+.btn-outline {
+  @apply border border-slate-300 hover:bg-slate-100 text-slate-700 focus:ring-slate-500;
+  @apply dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800;
+}
+
+/* Card styles */
+.card {
+  @apply bg-white rounded-xl shadow-md overflow-hidden border border-slate-200 transition-all duration-200;
+  @apply dark:bg-slate-800 dark:border-slate-700;
+}
+
+.card-header {
+  @apply px-6 py-4 border-b border-slate-200 bg-slate-50;
+  @apply dark:border-slate-700 dark:bg-slate-800;
+}
+
+.card-body {
+  @apply px-6 py-4;
+}
+
+.card-footer {
+  @apply px-6 py-4 border-t border-slate-200 bg-slate-50;
+  @apply dark:border-slate-700 dark:bg-slate-800;
+}
+
+/* Dark mode toggle */
+.dark-toggle-container {
+  @apply fixed top-4 right-4 z-50;
+}
+
+.dark-toggle {
+  @apply w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-md flex items-center justify-center cursor-pointer transition-all duration-300;
+  @apply hover:shadow-lg active:scale-95;
+  @apply border border-slate-200 dark:border-slate-700;
+  @apply text-yellow-500 dark:text-purple-400;
+}
+
+.dark-toggle-tooltip {
+  @apply absolute top-full right-0 mt-2 px-3 py-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-white text-xs rounded-lg shadow-lg;
+  @apply border border-slate-200 dark:border-slate-700;
+  @apply opacity-0 invisible transition-all duration-200;
+  @apply whitespace-nowrap;
+  @apply md:opacity-100 md:visible;
+}
+
+.dark-toggle:hover .dark-toggle-tooltip,
+.dark-toggle:focus .dark-toggle-tooltip,
+.dark-toggle-tooltip.show {
+  @apply opacity-100 visible;
+}
+
+/* Navigation */
+.nav-container {
+  @apply fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-lg z-40;
+  @apply md:top-0 md:bottom-auto md:border-t-0 md:border-b md:shadow-md;
+}
+
+.nav-items {
+  @apply flex justify-around items-center max-w-7xl mx-auto;
+  @apply md:justify-center md:gap-12;
+}
+
+.nav-item {
+  @apply flex flex-col items-center justify-center py-2 px-4 text-slate-600 dark:text-slate-300;
+  @apply hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200;
+  @apply relative min-w-[44px] min-h-[44px];
+}
+
+.nav-item.active {
+  @apply text-purple-600 dark:text-purple-400;
+}
+
+.nav-item.active::after {
+  content: '';
+  @apply absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-purple-600 dark:bg-purple-400 rounded-t-full;
+  @apply md:top-0 md:bottom-auto md:rounded-b-full md:rounded-t-none;
+}
+
+.nav-item-icon {
+  @apply text-xl mb-1;
+  @apply md:text-2xl;
+}
+
+.nav-item-text {
+  @apply text-xs font-medium;
+  @apply md:text-sm;
+}
+
+/* Mobile enhancements */
+@media (max-width: 768px) {
+  /* Increase tap target sizes */
+  button, a, .nav-item, .dark-toggle {
+    @apply min-w-[44px] min-h-[44px];
+  }
+  
+  /* Adjust font sizes for better readability */
   body {
-    @apply antialiased text-slate-800 bg-gradient-to-br from-slate-50 to-white font-sans transition-colors duration-200;
+    @apply text-base;
   }
   
-  body.dark {
-    @apply text-slate-100 bg-gradient-to-br from-slate-900 to-slate-800;
+  /* Ensure footer is visible */
+  footer {
+    @apply pb-24 text-center;
   }
   
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-montserrat;
+  footer p {
+    @apply text-sm font-medium text-slate-700 dark:text-white;
   }
-
-  /* Improve text visibility in dark mode */
-  .dark label, 
-  .dark .text-slate-700, 
-  .dark .text-slate-600, 
-  .dark .text-slate-500 {
-    @apply text-slate-200;
+  
+  footer a {
+    @apply underline text-purple-600 dark:text-purple-300 font-medium;
   }
 }
 
-@layer components {
-  .btn {
-    @apply px-4 py-2 rounded-md font-medium transition-all duration-300 backdrop-blur-sm;
-  }
-  
-  .btn-primary {
-    @apply bg-gradient-to-r from-purple-600 to-teal-600 text-white hover:from-purple-700 hover:to-teal-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:outline-none shadow-md hover:shadow-lg;
-  }
-  
-  .btn-secondary {
-    @apply bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 hover:from-slate-200 hover:to-slate-300 shadow-md hover:shadow-lg dark:from-slate-700 dark:to-slate-600 dark:text-slate-200;
-  }
-  
-  .card {
-    @apply bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-slate-200/50 p-6 hover:shadow-lg transition-all duration-300 dark:bg-slate-800/80 dark:border-slate-700/50;
-  }
-  
-  .input {
-    @apply mt-1 block w-full rounded-md border border-slate-300/70 bg-white/80 backdrop-blur-sm px-3 py-2 text-slate-800 shadow-sm focus:border-purple-500 focus:ring-purple-500 transition-all duration-300 dark:bg-slate-800/80 dark:border-slate-700/70 dark:text-slate-200 dark:placeholder-slate-400;
-  }
-
-  .glass-card {
-    @apply bg-white/70 backdrop-blur-sm border border-white/20 shadow-lg rounded-xl dark:bg-slate-800/70 dark:border-slate-700/20;
-  }
-
-  .glass-effect {
-    @apply bg-white/70 backdrop-blur-sm border border-white/20 dark:bg-slate-800/70 dark:border-slate-700/20;
-  }
-
-  .glass-morphism {
-    @apply bg-white/70 backdrop-blur-sm border border-white/20 shadow-lg dark:bg-slate-800/70 dark:border-slate-700/20;
-  }
-
-  .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-purple-500 to-teal-500;
-  }
-  
-  .dark-toggle-container {
-    @apply fixed z-50;
-    /* Desktop positioning */
-    @apply md:top-4 md:right-4;
-    /* Mobile positioning - bottom of screen, above navigation */
-    @apply bottom-20 right-4 md:bottom-auto;
-  }
-  
-  .dark-toggle {
-    @apply p-2.5 rounded-full bg-white/90 shadow-md backdrop-blur-sm border border-slate-200/50 text-slate-700 hover:bg-white hover:text-purple-600 transition-all duration-300 dark:bg-slate-800/90 dark:border-slate-700/50 dark:text-slate-200 dark:hover:text-teal-400;
-    /* Mobile enhancements */
-    @apply w-10 h-10 flex items-center justify-center;
-    /* Add subtle pulse animation to draw attention on mobile */
-    @apply hover:scale-110 active:scale-95;
-  }
-  
-  .dark-mode-tooltip {
-    @apply absolute top-0 right-12 bg-white/90 dark:bg-slate-800/90 text-slate-800 dark:text-slate-200 text-xs font-medium py-1 px-2 rounded shadow-md backdrop-blur-sm whitespace-nowrap;
-    /* Animation */
-    @apply animate-fadeIn;
-    /* Show on mobile too */
-    @apply block;
-  }
-}
-
-/* Custom animations */
+/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideInFromRight {
-  from { opacity: 0; transform: translateX(20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes slideInFromLeft {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes pulse {
-  0% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
-  100% { opacity: 0.6; transform: scale(1); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
 }
 
 .animate-fadeIn {
   animation: fadeIn 0.5s ease-out forwards;
 }
 
-.animate-slideInRight {
-  animation: slideInFromRight 0.5s ease-out forwards;
-}
-
-.animate-slideInLeft {
-  animation: slideInFromLeft 0.5s ease-out forwards;
+@keyframes pulseCustom {
+  0% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.05); }
+  100% { opacity: 0.3; transform: scale(1); }
 }
 
 .animate-pulse-custom {
-  animation: pulse 3s infinite ease-in-out;
-}
-
-.animate-shimmer {
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%);
-  background-size: 200% 100%;
-  animation: shimmer 3s infinite;
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-slate-100/50 backdrop-blur-sm dark:bg-slate-800/50;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-gradient-to-b from-purple-400 to-teal-400 rounded-full;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-gradient-to-b from-purple-500 to-teal-500;
-}
-
-/* Focus styles */
-*:focus-visible {
-  @apply outline-none ring-2 ring-purple-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900;
-}
-
-/* Smooth transitions for all interactive elements */
-a, button, input, select, textarea {
-  @apply transition-all duration-300;
-}
-
-/* Mobile-specific enhancements */
-@media (max-width: 768px) {
-  /* Increase tap target sizes for better mobile usability */
-  button, a, input[type="submit"] {
-    @apply min-h-[44px] min-w-[44px];
-  }
-  
-  /* Adjust font sizes for better readability on small screens */
-  h1 {
-    @apply text-3xl sm:text-4xl;
-  }
-  
-  h2 {
-    @apply text-xl sm:text-2xl;
-  }
-  
-  /* Add extra padding to form elements for better touch interaction */
-  .input, select, textarea {
-    @apply py-3 px-4;
-  }
-  
-  /* Ensure content doesn't overflow on small screens */
-  .glass-morphism, .card, .glass-card {
-    @apply px-4 py-5;
-  }
-  
-  /* Improve mobile form layout */
-  form {
-    @apply space-y-5;
-  }
-  
-  /* Ensure buttons are large enough on mobile */
-  .btn {
-    @apply py-3 px-5 text-base;
-  }
-  
-  /* Fix dark mode toggle position on small screens */
-  .dark-toggle-container {
-    @apply bottom-[72px] right-4;
-  }
-  
-  /* Improve contrast for dark mode text */
-  body.dark {
-    @apply text-white;
-  }
-  
-  /* Ensure navigation has enough contrast in dark mode */
-  .dark nav {
-    @apply bg-slate-900 border-slate-700;
-  }
-  
-  /* Make footer text more visible on mobile */
-  footer {
-    @apply pb-20 !important;
-    @apply text-sm !important;
-  }
-  
-  footer a {
-    @apply text-purple-600 dark:text-purple-300 font-medium !important;
-    @apply underline !important;
-  }
-}
-
-/* Enhanced mobile navigation */
-@media (max-width: 768px) {
-  /* Make navigation more prominent */
-  nav {
-    @apply border-t-2 !important;
-    @apply shadow-lg !important;
-  }
-  
-  /* Add active indicator for current page */
-  nav a.active {
-    @apply relative !important;
-  }
-  
-  nav a.active::after {
-    content: '';
-    @apply absolute -top-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-purple-500 dark:bg-purple-300;
-  }
-  
-  /* Increase icon size for better visibility */
-  nav a svg {
-    @apply w-6 h-6 !important;
-  }
-  
-  /* Add subtle animation to navigation items */
-  nav a {
-    @apply transition-transform duration-200 !important;
-  }
-  
-  nav a:active {
-    @apply scale-95 !important;
-  }
-  
-  /* Ensure text is visible */
-  nav a span {
-    @apply text-xs font-medium mt-1 !important;
-  }
+  animation: pulseCustom 4s ease-in-out infinite;
 }

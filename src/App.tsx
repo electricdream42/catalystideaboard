@@ -34,7 +34,7 @@ function App() {
       <div className="min-h-screen min-h-[calc(var(--vh,1vh)*100)] bg-white dark:bg-slate-900 flex flex-col">
         <DarkModeToggle />
         <div className="pb-20 md:pt-20 md:pb-0">
-          <div className="bg-gradient-to-br from-white via-purple-50 to-teal-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-slate-800 dark:text-white mb-8 border-b border-slate-200 dark:border-slate-700 shadow-md relative overflow-hidden">
+          <div className="bg-gradient-to-br from-white via-purple-50 to-teal-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-slate-800 dark:text-white mb-4 border-b border-slate-200 dark:border-slate-700 shadow-md relative overflow-hidden">
             {/* Decorative elements */}
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-600 to-teal-500"></div>
             <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-purple-200 dark:bg-purple-900 opacity-30 animate-pulse-custom"></div>
@@ -48,13 +48,13 @@ function App() {
               backgroundSize: '20px 20px'
             }}></div>
             
-            <div className="max-w-7xl mx-auto px-4 py-10 md:py-16 relative">
+            <div className="max-w-7xl mx-auto px-4 hero-section relative">
               <div className="flex flex-col items-center text-center">
-                <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-5 md:mb-8 animate-fadeIn bg-clip-text text-transparent bg-gradient-to-r from-purple-700 via-purple-600 to-teal-600 pb-2">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4 animate-fadeIn bg-clip-text text-transparent bg-gradient-to-r from-purple-700 via-purple-600 to-teal-600 pb-2">
                   Catalyst Group Ideaboard
                 </h1>
                 
-                <p className="text-base md:text-lg text-slate-700 dark:text-slate-100 max-w-2xl mb-6 md:mb-10 animate-fadeIn" style={{ animationDelay: '0.1s' }}>
+                <p className="text-base md:text-lg text-slate-700 dark:text-slate-100 max-w-2xl mb-4 md:mb-6 animate-fadeIn" style={{ animationDelay: '0.1s' }}>
                   Share, vote, and collaborate on innovative ideas across our organizations
                 </p>
                 
@@ -72,7 +72,7 @@ function App() {
               </div>
             </div>
           </div>
-          <div className="max-w-7xl mx-auto px-4 pb-6">
+          <div className="max-w-7xl mx-auto px-4 pb-6 main-content">
             <Routes>
               <Route path="/" element={<SubmitIdea />} />
               <Route path="/vote" element={<VoteIdeas />} />
