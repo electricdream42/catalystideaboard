@@ -82,14 +82,16 @@ function App() {
         </div>
         <footer className="mt-auto text-center py-4 md:py-6 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-300 text-xs md:text-sm border-t border-slate-200 dark:border-slate-800 shadow-inner">
           <div className="max-w-7xl mx-auto px-4">
-            <p>Catalyst Group — 30 Years of Social Change & Impact</p>
-            <p className="mt-1 text-xs">
+            <div className="mb-2 md:mb-1">
+              <p className="font-medium text-sm md:text-base text-slate-700 dark:text-slate-200">Catalyst Group — 30 Years of Social Change & Impact</p>
+            </div>
+            <div className="mt-2">
               <a href="https://yourstory.com/socialstory/2024/09/catalyst-group-30-years-journey-social-change-impact" 
-                 className="text-purple-600 hover:text-teal-500 dark:text-purple-400 dark:hover:text-teal-400 transition-colors" 
+                 className="inline-block px-4 py-2 rounded-full bg-purple-100 dark:bg-purple-900/70 text-purple-700 dark:text-purple-200 hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors text-sm font-medium" 
                  target="_blank" rel="noopener noreferrer">
                 Learn more about our journey
               </a>
-            </p>
+            </div>
           </div>
         </footer>
         <Navigation />

@@ -177,7 +177,7 @@ a, button, input, select, textarea {
 @media (max-width: 768px) {
   /* Increase tap target sizes for better mobile usability */
   button, a, input[type="submit"] {
-    @apply min-h-[40px] min-w-[40px];
+    @apply min-h-[44px] min-w-[44px];
   }
   
   /* Adjust font sizes for better readability on small screens */
@@ -222,5 +222,54 @@ a, button, input, select, textarea {
   /* Ensure navigation has enough contrast in dark mode */
   .dark nav {
     @apply bg-slate-900 border-slate-700;
+  }
+  
+  /* Make footer text more visible on mobile */
+  footer {
+    @apply pb-20 !important;
+    @apply text-sm !important;
+  }
+  
+  footer a {
+    @apply text-purple-600 dark:text-purple-300 font-medium !important;
+    @apply underline !important;
+  }
+}
+
+/* Enhanced mobile navigation */
+@media (max-width: 768px) {
+  /* Make navigation more prominent */
+  nav {
+    @apply border-t-2 !important;
+    @apply shadow-lg !important;
+  }
+  
+  /* Add active indicator for current page */
+  nav a.active {
+    @apply relative !important;
+  }
+  
+  nav a.active::after {
+    content: '';
+    @apply absolute -top-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-purple-500 dark:bg-purple-300;
+  }
+  
+  /* Increase icon size for better visibility */
+  nav a svg {
+    @apply w-6 h-6 !important;
+  }
+  
+  /* Add subtle animation to navigation items */
+  nav a {
+    @apply transition-transform duration-200 !important;
+  }
+  
+  nav a:active {
+    @apply scale-95 !important;
+  }
+  
+  /* Ensure text is visible */
+  nav a span {
+    @apply text-xs font-medium mt-1 !important;
   }
 }

@@ -5,10 +5,20 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        'sans': ['Poppins', 'sans-serif'],
+        'sans': ['Poppins', 'system-ui', 'sans-serif'],
         'montserrat': ['Montserrat', 'sans-serif'],
+      },
+      colors: {
+        // Add custom colors here if needed
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-out forwards',
+        'slide-in-right': 'slideInFromRight 0.5s ease-out forwards',
+        'slide-in-left': 'slideInFromLeft 0.5s ease-out forwards',
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 };
