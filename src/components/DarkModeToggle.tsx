@@ -9,6 +9,8 @@ export default function DarkModeToggle() {
     }
     return false;
   });
+  
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     if (darkMode) {
@@ -21,15 +23,33 @@ export default function DarkModeToggle() {
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
+    // Show tooltip briefly when toggled
+    setShowTooltip(true);
+    setTimeout(() => setShowTooltip(false), 1500);
   };
 
   return (
-    <button 
-      onClick={toggleDarkMode} 
-      className="dark-toggle"
-      aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-    >
-      {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-    </button>
+    <div className="dark-toggle-container">
+      <button 
+        onClick={toggleDarkMode} 
+        className="dark-toggle"
+        aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+        onTouchStart={() => setShowTooltip(true)}
+        onTouchEnd={() => setTimeout(() => setShowTooltip(false), 1500)}
+      >
+        {darkMode ? (
+          <Sun className="w-5 h-5 text-yellow-400" />
+        ) : (
+          <Moon className="w-5 h-5 text-purple-600" />
+        )}
+      </button>
+      {showTooltip && (
+        <div className="dark-mode-tooltip">
+          {darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+        </div>
+      )}
+    </div>
   );
 } 

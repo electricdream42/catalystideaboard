@@ -4,15 +4,23 @@
 
 @layer base {
   body {
-    @apply antialiased text-slate-800 bg-gradient-to-br from-slate-50 to-white font-poppins transition-colors duration-200;
+    @apply antialiased text-slate-800 bg-gradient-to-br from-slate-50 to-white font-sans transition-colors duration-200;
   }
   
   body.dark {
-    @apply text-slate-200 bg-gradient-to-br from-slate-900 to-slate-800;
+    @apply text-slate-100 bg-gradient-to-br from-slate-900 to-slate-800;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-montserrat;
+  }
+
+  /* Improve text visibility in dark mode */
+  .dark label, 
+  .dark .text-slate-700, 
+  .dark .text-slate-600, 
+  .dark .text-slate-500 {
+    @apply text-slate-200;
   }
 }
 
@@ -34,7 +42,7 @@
   }
   
   .input {
-    @apply mt-1 block w-full rounded-md border border-slate-300/70 bg-white/80 backdrop-blur-sm px-3 py-2 text-slate-800 shadow-sm focus:border-purple-500 focus:ring-purple-500 transition-all duration-300 dark:bg-slate-800/80 dark:border-slate-700/70 dark:text-slate-200;
+    @apply mt-1 block w-full rounded-md border border-slate-300/70 bg-white/80 backdrop-blur-sm px-3 py-2 text-slate-800 shadow-sm focus:border-purple-500 focus:ring-purple-500 transition-all duration-300 dark:bg-slate-800/80 dark:border-slate-700/70 dark:text-slate-200 dark:placeholder-slate-400;
   }
 
   .glass-card {
@@ -53,8 +61,28 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-purple-500 to-teal-500;
   }
   
+  .dark-toggle-container {
+    @apply fixed z-50;
+    /* Desktop positioning */
+    @apply md:top-4 md:right-4;
+    /* Mobile positioning - bottom of screen, above navigation */
+    @apply bottom-20 right-4 md:bottom-auto;
+  }
+  
   .dark-toggle {
-    @apply fixed top-4 right-4 z-50 p-2 rounded-full bg-white/80 shadow-md backdrop-blur-sm border border-slate-200/50 text-slate-700 hover:bg-white hover:text-purple-600 transition-all duration-300 dark:bg-slate-800/80 dark:border-slate-700/50 dark:text-slate-200 dark:hover:text-teal-400;
+    @apply p-2.5 rounded-full bg-white/90 shadow-md backdrop-blur-sm border border-slate-200/50 text-slate-700 hover:bg-white hover:text-purple-600 transition-all duration-300 dark:bg-slate-800/90 dark:border-slate-700/50 dark:text-slate-200 dark:hover:text-teal-400;
+    /* Mobile enhancements */
+    @apply w-10 h-10 flex items-center justify-center;
+    /* Add subtle pulse animation to draw attention on mobile */
+    @apply hover:scale-110 active:scale-95;
+  }
+  
+  .dark-mode-tooltip {
+    @apply absolute top-0 right-12 bg-white/90 dark:bg-slate-800/90 text-slate-800 dark:text-slate-200 text-xs font-medium py-1 px-2 rounded shadow-md backdrop-blur-sm whitespace-nowrap;
+    /* Animation */
+    @apply animate-fadeIn;
+    /* Show on mobile too */
+    @apply block;
   }
 }
 
@@ -124,7 +152,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-slate-100/50 backdrop-blur-sm;
+  @apply bg-slate-100/50 backdrop-blur-sm dark:bg-slate-800/50;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -137,10 +165,62 @@
 
 /* Focus styles */
 *:focus-visible {
-  @apply outline-none ring-2 ring-purple-500 ring-offset-2 ring-offset-white;
+  @apply outline-none ring-2 ring-purple-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900;
 }
 
 /* Smooth transitions for all interactive elements */
 a, button, input, select, textarea {
   @apply transition-all duration-300;
+}
+
+/* Mobile-specific enhancements */
+@media (max-width: 768px) {
+  /* Increase tap target sizes for better mobile usability */
+  button, a, input[type="submit"] {
+    @apply min-h-[40px] min-w-[40px];
+  }
+  
+  /* Adjust font sizes for better readability on small screens */
+  h1 {
+    @apply text-3xl sm:text-4xl;
+  }
+  
+  h2 {
+    @apply text-xl sm:text-2xl;
+  }
+  
+  /* Add extra padding to form elements for better touch interaction */
+  .input, select, textarea {
+    @apply py-3 px-4;
+  }
+  
+  /* Ensure content doesn't overflow on small screens */
+  .glass-morphism, .card, .glass-card {
+    @apply px-4 py-5;
+  }
+  
+  /* Improve mobile form layout */
+  form {
+    @apply space-y-5;
+  }
+  
+  /* Ensure buttons are large enough on mobile */
+  .btn {
+    @apply py-3 px-5 text-base;
+  }
+  
+  /* Fix dark mode toggle position on small screens */
+  .dark-toggle-container {
+    @apply bottom-[72px] right-4;
+  }
+  
+  /* Improve contrast for dark mode text */
+  body.dark {
+    @apply text-white;
+  }
+  
+  /* Ensure navigation has enough contrast in dark mode */
+  .dark nav {
+    @apply bg-slate-900 border-slate-700;
+  }
 }

@@ -10,43 +10,43 @@ export default function Navigation() {
           <NavLink 
             to="/" 
             className={({ isActive }) => 
-              `flex flex-col md:flex-row items-center px-4 py-2 rounded-lg transition-all duration-300 ${
+              `flex flex-col md:flex-row items-center px-3 md:px-4 py-2 rounded-lg transition-all duration-300 ${
                 isActive 
-                  ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 shadow-sm' 
+                  ? 'text-purple-600 dark:text-purple-300 bg-purple-50 dark:bg-purple-900/50 shadow-sm' 
                   : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 hover:shadow-sm hover:translate-y-[-2px]'
               }`
             }
           >
             <Home className="w-5 h-5 md:mr-2" />
-            <span className="text-xs md:text-sm font-medium">Submit</span>
+            <span className="text-xs md:text-sm font-medium mt-1 md:mt-0">Submit</span>
           </NavLink>
           
           <NavLink 
             to="/vote" 
             className={({ isActive }) => 
-              `flex flex-col md:flex-row items-center px-4 py-2 rounded-lg transition-all duration-300 ${
+              `flex flex-col md:flex-row items-center px-3 md:px-4 py-2 rounded-lg transition-all duration-300 ${
                 isActive 
-                  ? 'text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 shadow-sm' 
+                  ? 'text-teal-600 dark:text-teal-300 bg-teal-50 dark:bg-teal-900/50 shadow-sm' 
                   : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 hover:shadow-sm hover:translate-y-[-2px]'
               }`
             }
           >
             <Vote className="w-5 h-5 md:mr-2" />
-            <span className="text-xs md:text-sm font-medium">Vote</span>
+            <span className="text-xs md:text-sm font-medium mt-1 md:mt-0">Vote</span>
           </NavLink>
           
           <NavLink 
             to="/leaderboard" 
             className={({ isActive }) => 
-              `flex flex-col md:flex-row items-center px-4 py-2 rounded-lg transition-all duration-300 ${
+              `flex flex-col md:flex-row items-center px-3 md:px-4 py-2 rounded-lg transition-all duration-300 ${
                 isActive 
-                  ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 shadow-sm' 
+                  ? 'text-purple-600 dark:text-purple-300 bg-purple-50 dark:bg-purple-900/50 shadow-sm' 
                   : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 hover:shadow-sm hover:translate-y-[-2px]'
               }`
             }
           >
             <Trophy className="w-5 h-5 md:mr-2" />
-            <span className="text-xs md:text-sm font-medium">Leaderboard</span>
+            <span className="text-xs md:text-sm font-medium mt-1 md:mt-0">Leaderboard</span>
           </NavLink>
         </div>
       </div>
