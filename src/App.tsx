@@ -26,7 +26,7 @@ function App() {
             
             <div className="max-w-7xl mx-auto px-4 py-16 relative">
               <div className="flex flex-col items-center text-center">
-                <h1 className="text-6xl font-serif font-bold mb-8 animate-fadeIn bg-clip-text text-transparent bg-gradient-to-r from-purple-700 via-purple-600 to-teal-600">
+                <h1 className="text-5xl md:text-6xl font-bold mb-8 animate-fadeIn bg-clip-text text-transparent bg-gradient-to-r from-purple-700 via-purple-600 to-teal-600 pb-2">
                   Catalyst Group Ideaboard
                 </h1>
                 

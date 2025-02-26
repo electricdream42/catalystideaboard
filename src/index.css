@@ -4,7 +4,11 @@
 
 @layer base {
   body {
-    @apply antialiased text-slate-800 bg-gradient-to-br from-slate-50 to-white;
+    @apply antialiased text-slate-800 bg-gradient-to-br from-slate-50 to-white font-poppins;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-montserrat;
   }
 }
 

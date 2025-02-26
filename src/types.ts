@@ -29,10 +29,12 @@ export type Organization =
   | "Fuzhio" 
   | "Green Foundation" 
   | "Catalyst Foundation" 
+  | "Catalyst Group"
   | "Solvist Financial Services" 
   | "Impact Catalysts Foundation";
 
 export const ORGANIZATIONS: Organization[] = [
+  "Catalyst Group",
   "Swasti",
   "Vrutti",
   "Fuzhio",
