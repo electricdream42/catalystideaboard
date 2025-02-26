@@ -3,6 +3,7 @@ export interface Idea {
   title: string;
   description: string;
   author: string;
+  organization: string;
   votes: number;
   created_at: Date | string;
   comments?: Comment[];
@@ -19,4 +20,24 @@ export interface IdeaFormData {
   title: string;
   description: string;
   author: string;
+  organization: string;
 }
+
+export type Organization = 
+  | "Swasti" 
+  | "Vrutti" 
+  | "Fuzhio" 
+  | "Green Foundation" 
+  | "Catalyst Foundation" 
+  | "Solvist Financial Services" 
+  | "Impact Catalysts Foundation";
+
+export const ORGANIZATIONS: Organization[] = [
+  "Swasti",
+  "Vrutti",
+  "Fuzhio",
+  "Green Foundation",
+  "Catalyst Foundation",
+  "Solvist Financial Services",
+  "Impact Catalysts Foundation"
+];

@@ -33,153 +33,193 @@ export default function IdeaCard({
     }
   };
 
+  // Function to get organization badge color
+  const getOrgColor = (org: string) => {
+    const colors = {
+      "Swasti": "bg-purple-100/80 text-purple-800",
+      "Vrutti": "bg-teal-100/80 text-teal-800",
+      "Fuzhio": "bg-purple-100/80 text-purple-800",
+      "Green Foundation": "bg-teal-100/80 text-teal-800",
+      "Catalyst Foundation": "bg-purple-100/80 text-purple-800",
+      "Solvist Financial Services": "bg-teal-100/80 text-teal-800",
+      "Impact Catalysts Foundation": "bg-purple-100/80 text-purple-800"
+    };
+    
+    return colors[org as keyof typeof colors] || "bg-slate-100/80 text-slate-800";
+  };
+
   return (
-    <div className="bg-white dark:bg-black rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 p-6 transition-all hover:shadow-xl">
-      <div className="flex items-start justify-between">
+    <div className="glass-morphism p-6 rounded-xl relative overflow-hidden transition-all hover:shadow-lg">
+      {/* Decorative elements */}
+      <div className="absolute -top-12 -right-12 w-24 h-24 rounded-full bg-purple-100/20 opacity-50 animate-pulse-custom"></div>
+      <div className="absolute -bottom-12 -left-12 w-20 h-20 rounded-full bg-teal-100/20 opacity-50 animate-pulse-custom" style={{ animationDelay: '1.5s' }}></div>
+      
+      <div className="flex items-start justify-between relative z-10">
         <div className="flex-1">
-          <h3 className={`text-lg font-semibold text-black dark:text-white ${!showVoteButton ? 'mr-4' : ''}`}>{idea.title}</h3>
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <span className={`text-xs px-2 py-1 rounded-full backdrop-blur-sm ${getOrgColor(idea.organization)}`}>
+              {idea.organization}
+            </span>
+          </div>
+          <h3 className={`text-lg font-semibold text-slate-800 ${!showVoteButton ? 'mr-4' : ''}`}>{idea.title}</h3>
           {isExpanded && (
             <div className="mt-2">
-              <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{idea.description}</p>
+              <p className="text-slate-600 whitespace-pre-wrap">{idea.description}</p>
               {showVoteButton && (
-                <div className="mt-4 flex items-center text-sm text-gray-500 dark:text-gray-400">
-                  <span className="font-medium text-black dark:text-white">{idea.author}</span>
+                <div className="mt-4 flex items-center text-sm text-slate-500">
+                  <span className="font-medium text-slate-700">{idea.author}</span>
                   <span className="mx-2">·</span>
                   <span>{typeof idea.created_at === 'string' 
                     ? new Date(idea.created_at).toLocaleDateString()
                     : idea.created_at.toLocaleDateString()}</span>
-                  <button
-                    onClick={() => setIsCommenting(!isCommenting)}
-                    className="ml-4 flex items-center text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
-                  >
-                    <MessageCircle className="w-4 h-4 mr-1" />
-                    <span>{idea.comments?.length || 0} Comments</span>
-                  </button>
                 </div>
               )}
             </div>
           )}
-          {!isExpanded && showVoteButton && (
-            <div className="mt-4 flex items-center text-sm text-gray-500 dark:text-gray-400">
-              <span className="font-medium text-black dark:text-white">{idea.author}</span>
-              <span className="mx-2">·</span>
-              <span>{typeof idea.created_at === 'string' 
-                ? new Date(idea.created_at).toLocaleDateString()
-                : idea.created_at.toLocaleDateString()}</span>
-              <button
-                onClick={() => setIsCommenting(!isCommenting)}
-                className="ml-4 flex items-center text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
-              >
-                <MessageCircle className="w-4 h-4 mr-1" />
-                <span>{idea.comments?.length || 0} Comments</span>
-              </button>
-            </div>
-          )}
         </div>
-        <div className="flex items-start gap-2">
-          {!showVoteButton ? (
-            <>
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="p-2 text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                aria-label={isExpanded ? "Show less" : "Show more"}
-              >
-                {isExpanded ? (
-                  <ChevronUp className="w-5 h-5" />
-                ) : (
-                  <ChevronDown className="w-5 h-5" />
-                )}
-              </button>
-              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                <span className="font-bold text-2xl">{idea.votes}</span>
-                <ArrowBigUpIcon className="w-5 h-5" />
-              </div>
-            </>
-          ) : null}
-          {showVoteButton && (
-          <button
-            onClick={() => onVote?.(idea.id)}
-            disabled={hasVoted}
-            className={`flex flex-col items-center ml-4 p-2 rounded-lg transition-all ${
-              hasVoted 
-                ? 'cursor-not-allowed bg-emerald-100 dark:bg-emerald-900' 
-                : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-            }`}
-            title={hasVoted ? 'Already voted' : 'Vote for this idea'}
-          >
-            <ArrowBigUpIcon 
-              className={`w-6 h-6 ${
+        
+        {showVoteButton && (
+          <div className="flex flex-col items-center ml-4">
+            <button 
+              onClick={() => onVote && onVote(idea.id)}
+              disabled={hasVoted}
+              className={`flex flex-col items-center p-2 rounded-lg transition-colors ${
                 hasVoted 
-                  ? 'text-emerald-600 dark:text-emerald-400 fill-current' 
-                  : 'text-black dark:text-white'
-              }`} 
-            />
-            <span className="text-sm font-medium text-black dark:text-white">{idea.votes}</span>
-          </button>
-          )}
-          {onDelete && (
-            <button
-              onClick={() => {
-                if (window.confirm('Are you sure you want to delete this idea?')) {
-                  setIsDeleting(true);
-                  onDelete(idea.id);
-                }
-              }}
-              disabled={isDeleting}
-              className="p-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                  ? 'bg-gradient-to-r from-purple-500/20 to-teal-500/20 backdrop-blur-sm text-purple-500 cursor-not-allowed' 
+                  : 'text-slate-400 hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-teal-500/10 hover:text-purple-500 hover:backdrop-blur-sm'
+              }`}
+              aria-label="Vote for this idea"
             >
-              <Trash2 className="w-5 h-5" />
+              <ArrowBigUpIcon className="w-6 h-6" />
+              <span className="text-sm font-medium mt-1">{idea.votes}</span>
             </button>
-          )}
-        </div>
+          </div>
+        )}
+        
+        {!showVoteButton && (
+          <div className="flex items-center ml-4">
+            <div className="flex items-center bg-gradient-to-r from-purple-100/80 to-teal-100/80 backdrop-blur-sm px-3 py-1 rounded-full">
+              <ArrowBigUpIcon className="w-4 h-4 text-purple-500 mr-1" />
+              <span className="text-sm font-medium text-purple-700">{idea.votes}</span>
+            </div>
+          </div>
+        )}
       </div>
       
-      {isCommenting && (
-        <form onSubmit={handleSubmitComment} className="mt-4 space-y-3">
-          <div>
-            <input
-              type="text"
-              placeholder="Your name"
-              value={comment.author}
-              onChange={(e) => setComment({ ...comment, author: e.target.value })}
-              className="w-full px-3 py-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-md text-black dark:text-white placeholder-gray-500 focus:border-gray-400 focus:ring-gray-400"
-              required
-            />
-          </div>
-          <div className="flex">
-            <input
-              type="text"
-              placeholder="Add a comment..."
-              value={comment.text}
-              onChange={(e) => setComment({ ...comment, text: e.target.value })}
-              className="flex-1 px-3 py-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-l-md text-black dark:text-white placeholder-gray-500 focus:border-gray-400 focus:ring-gray-400"
-              required
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-r-md hover:bg-gray-800 dark:hover:bg-gray-100"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
-        </form>
+      {!isExpanded && (
+        <button 
+          onClick={() => setIsExpanded(true)}
+          className="mt-2 flex items-center text-sm text-slate-500 hover:text-slate-700"
+        >
+          <ChevronDown className="w-4 h-4 mr-1" />
+          Show more
+        </button>
       )}
       
-      {idea.comments && idea.comments.length > 0 && (
-        <div className="mt-4 space-y-3">
-          {idea.comments.map((comment) => (
-            <div key={comment.id} className="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg">
-              <p className="text-gray-800 dark:text-gray-200">{comment.text}</p>
-              <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                <span className="font-medium text-black dark:text-white">{comment.author}</span>
-                <span className="mx-1">·</span>
-                <span>{typeof comment.created_at === 'string'
-                  ? new Date(comment.created_at).toLocaleDateString()
-                  : comment.created_at.toLocaleDateString()}</span>
+      {isExpanded && (
+        <>
+          <div className="mt-6 flex items-center justify-between">
+            <button 
+              onClick={() => setIsCommenting(!isCommenting)}
+              className="flex items-center text-sm text-slate-500 hover:text-slate-700"
+            >
+              <MessageCircle className="w-4 h-4 mr-1" />
+              {idea.comments?.length || 0} Comments
+            </button>
+            
+            {onDelete && (
+              <button 
+                onClick={() => setIsDeleting(true)}
+                className="flex items-center text-sm text-red-500 hover:text-red-700"
+              >
+                <Trash2 className="w-4 h-4 mr-1" />
+                Delete
+              </button>
+            )}
+          </div>
+          
+          {isDeleting && (
+            <div className="mt-4 p-4 bg-red-50/80 backdrop-blur-sm rounded-lg border border-red-100/50">
+              <p className="text-sm text-red-800 mb-3">Are you sure you want to delete this idea? This action cannot be undone.</p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    if (onDelete) {
+                      onDelete(idea.id);
+                    }
+                    setIsDeleting(false);
+                  }}
+                  className="px-3 py-1 bg-gradient-to-r from-red-500 to-red-600 text-white text-sm rounded-md hover:from-red-600 hover:to-red-700"
+                >
+                  Yes, delete
+                </button>
+                <button
+                  onClick={() => setIsDeleting(false)}
+                  className="px-3 py-1 bg-slate-200/80 backdrop-blur-sm text-slate-800 text-sm rounded-md hover:bg-slate-300/80"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
-          ))}
-        </div>
+          )}
+          
+          {isCommenting && (
+            <form onSubmit={handleSubmitComment} className="mt-4 space-y-3">
+              <div>
+                <input
+                  type="text"
+                  value={comment.author}
+                  onChange={(e) => setComment({ ...comment, author: e.target.value })}
+                  placeholder="Your name"
+                  className="w-full px-3 py-2 border border-slate-300/70 rounded-md bg-white/80 backdrop-blur-sm text-slate-800 focus:border-purple-500 focus:ring-purple-500"
+                  required
+                />
+              </div>
+              <div className="flex">
+                <input
+                  type="text"
+                  value={comment.text}
+                  onChange={(e) => setComment({ ...comment, text: e.target.value })}
+                  placeholder="Add a comment..."
+                  className="flex-1 px-3 py-2 border border-slate-300/70 rounded-l-md bg-white/80 backdrop-blur-sm text-slate-800 focus:border-purple-500 focus:ring-purple-500"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="px-3 py-2 bg-gradient-to-r from-purple-600 to-teal-600 text-white rounded-r-md hover:from-purple-700 hover:to-teal-700"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </div>
+            </form>
+          )}
+          
+          {idea.comments && idea.comments.length > 0 && (
+            <div className="mt-4 space-y-3">
+              {idea.comments.map((comment) => (
+                <div key={comment.id} className="p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-slate-200/50">
+                  <div className="flex justify-between items-start">
+                    <span className="font-medium text-slate-800">{comment.author}</span>
+                    <span className="text-xs text-slate-500">
+                      {typeof comment.created_at === 'string'
+                        ? new Date(comment.created_at).toLocaleDateString()
+                        : comment.created_at.toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-slate-600">{comment.text}</p>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          <button 
+            onClick={() => setIsExpanded(false)}
+            className="mt-4 flex items-center text-sm text-slate-500 hover:text-slate-700"
+          >
+            <ChevronUp className="w-4 h-4 mr-1" />
+            Show less
+          </button>
+        </>
       )}
     </div>
   );

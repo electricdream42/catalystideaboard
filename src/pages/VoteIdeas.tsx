@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Vote } from 'lucide-react';
+import { Filter, Vote } from 'lucide-react';
 import IdeaCard from '../components/IdeaCard';
-import { supabase } from '../lib/supabase';
-import { Comment, Idea } from '../types';
+import { fetchIdeas, fetchVotedIdeas, voteForIdea, addComment, deleteIdea } from '../lib/supabaseUtils';
+import { Idea, ORGANIZATIONS } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
 export default function VoteIdeas() {
   const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [filteredIdeas, setFilteredIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedOrg, setSelectedOrg] = useState<string>('');
+  const [showFilters, setShowFilters] = useState(false);
   const [voterId] = useState(() => {
     // Get or create a unique voter ID
     const storedId = localStorage.getItem('voterId');
@@ -22,150 +26,218 @@ export default function VoteIdeas() {
   });
 
   useEffect(() => {
-    fetchIdeas();
-    fetchVotedIdeas();
+    loadIdeas();
+    loadVotedIdeas();
   }, []);
 
-  const fetchVotedIdeas = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('idea_votes')
-        .select('idea_id')
-        .eq('voter_id', voterId);
-
-      if (error) throw error;
-
-      const votedSet = new Set(data.map(vote => vote.idea_id));
-      setVotedIdeas(votedSet);
-      localStorage.setItem('votedIdeas', JSON.stringify(Array.from(votedSet)));
-    } catch (error) {
-      console.error('Error fetching voted ideas:', error);
+  useEffect(() => {
+    if (selectedOrg) {
+      setFilteredIdeas(ideas.filter(idea => idea.organization === selectedOrg));
+    } else {
+      setFilteredIdeas(ideas);
     }
-  };
+  }, [selectedOrg, ideas]);
 
-  const fetchIdeas = async () => {
+  const loadIdeas = async () => {
     try {
-      const { data, error } = await supabase
-        .from('ideas')
-        .select('*, comments(*)');
-
-      if (error) throw error;
-
-      setIdeas(data || []);
-    } catch (error) {
-      console.error('Error fetching ideas:', error);
-      alert('Failed to load ideas. Please refresh the page.');
+      setLoading(true);
+      setError(null);
+      const data = await fetchIdeas();
+      setIdeas(data);
+      setFilteredIdeas(data);
+    } catch (err) {
+      console.error('Error loading ideas:', err);
+      setError('Failed to load ideas. Please refresh the page.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVote = async (id: string) => {
-    if (votedIdeas.has(id)) {
-      alert('You have already voted for this idea');
-      return;
+  const loadVotedIdeas = async () => {
+    try {
+      const votedSet = await fetchVotedIdeas(voterId);
+      setVotedIdeas(votedSet);
+      localStorage.setItem('votedIdeas', JSON.stringify(Array.from(votedSet)));
+    } catch (err) {
+      console.error('Error loading voted ideas:', err);
+      // Non-critical error, don't show to user
     }
+  };
+
+  const handleVote = async (id: string) => {
+    if (votedIdeas.has(id)) return;
 
     try {
-      const { error } = await supabase.rpc('increment_votes', { 
-        idea_id: id,
-        voter_id: voterId
+      // Optimistically update UI
+      setVotedIdeas(prev => {
+        const newSet = new Set(prev);
+        newSet.add(id);
+        return newSet;
       });
-
-      if (error) {
-        if (error.message === 'Already voted') {
-          alert('You have already voted for this idea');
-          return;
-        }
-        throw error;
-      }
+      localStorage.setItem('votedIdeas', JSON.stringify(Array.from(votedIdeas)));
       
-      // Update local state
-      const newVotedIdeas = new Set(votedIdeas);
-      newVotedIdeas.add(id);
-      setVotedIdeas(newVotedIdeas);
-      localStorage.setItem('votedIdeas', JSON.stringify(Array.from(newVotedIdeas)));
-
-      setIdeas((prev) =>
-        prev.map((idea) =>
+      setIdeas(prev => 
+        prev.map(idea => 
           idea.id === id ? { ...idea, votes: idea.votes + 1 } : idea
         )
       );
-    } catch (error) {
-      console.error('Error voting:', error);
-      alert('Failed to vote. Please try again.');
+
+      // Update the database
+      await voteForIdea(id, voterId);
+    } catch (err) {
+      console.error('Error voting for idea:', err);
+      
+      // Revert optimistic update on error
+      setVotedIdeas(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
+      
+      setIdeas(prev => 
+        prev.map(idea => 
+          idea.id === id ? { ...idea, votes: idea.votes - 1 } : idea
+        )
+      );
+      
+      setError('Failed to register vote. Please try again.');
     }
   };
 
   const handleComment = async (ideaId: string, text: string, author: string) => {
     try {
-      const { data, error } = await supabase
-        .from('comments')
-        .insert([{ idea_id: ideaId, text, author }])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      setIdeas((prev) =>
-        prev.map((idea) =>
-          idea.id === ideaId
-            ? { ...idea, comments: [...(idea.comments || []), data] }
+      const newComment = await addComment(ideaId, text, author);
+      
+      // Update local state
+      setIdeas(prev => 
+        prev.map(idea => 
+          idea.id === ideaId 
+            ? { 
+                ...idea, 
+                comments: [...(idea.comments || []), newComment] 
+              } 
             : idea
         )
       );
-    } catch (error) {
-      console.error('Error adding comment:', error);
-      alert('Failed to add comment. Please try again.');
+    } catch (err) {
+      console.error('Error adding comment:', err);
+      setError('Failed to add comment. Please try again.');
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('ideas')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      await deleteIdea(id);
       
-      setIdeas((prev) => prev.filter((idea) => idea.id !== id));
-    } catch (error) {
-      console.error('Error deleting idea:', error);
-      alert('Failed to delete idea. Please try again.');
+      // Update local state
+      setIdeas(prev => prev.filter(idea => idea.id !== id));
+      setFilteredIdeas(prev => prev.filter(idea => idea.id !== id));
+    } catch (err) {
+      console.error('Error deleting idea:', err);
+      setError('Failed to delete idea. Please try again.');
     }
   };
 
+  const clearError = () => setError(null);
+
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-500/10 mb-4">
-          <Vote className="w-8 h-8 text-indigo-400" />
+    <div className="py-8">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-bold gradient-text">Vote on Ideas</h1>
+          <p className="text-slate-600 mt-1">Support the innovations that inspire you</p>
         </div>
-        <h1 className="text-3xl font-bold text-black dark:text-white">Vote on Ideas</h1>
-        <p className="mt-2 text-gray-300">
-          Support the ideas you believe will make our community better
-        </p>
-        {loading ? (
-          <p className="mt-8 text-gray-400 text-center">Loading ideas...</p>
-        ) : ideas.length === 0 && (
-          <p className="mt-8 text-gray-400 text-center">
-            No ideas have been submitted yet. Be the first to share your idea!
-          </p>
-        )}
+        <button 
+          onClick={() => setShowFilters(!showFilters)}
+          className="btn btn-secondary flex items-center gap-2"
+        >
+          <Filter className="w-4 h-4" />
+          {showFilters ? 'Hide Filters' : 'Show Filters'}
+        </button>
       </div>
 
-      <div className="space-y-6">
-        {ideas.map((idea) => (
-          <IdeaCard
-            key={idea.id}
-            idea={idea}
-            onVote={handleVote}
-            onComment={handleComment}
-            hasVoted={votedIdeas.has(idea.id)}
-          />
-        ))}
-      </div>
+      {error && (
+        <div className="p-4 mb-6 bg-red-50/80 backdrop-blur-sm text-red-700 rounded-lg border border-red-200/50 animate-fadeIn relative">
+          <button 
+            onClick={clearError}
+            className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+          >
+            &times;
+          </button>
+          {error}
+        </div>
+      )}
+
+      {showFilters && (
+        <div className="mb-8 glass-morphism p-6 rounded-xl relative overflow-hidden">
+          <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-purple-100/30 opacity-70 animate-pulse-custom"></div>
+          <div className="absolute -bottom-8 -left-8 w-20 h-20 rounded-full bg-teal-100/30 opacity-70 animate-pulse-custom" style={{ animationDelay: '1.5s' }}></div>
+          
+          <h2 className="text-lg font-medium text-slate-800 mb-4">Filter by Organization</h2>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setSelectedOrg('')}
+              className={`px-3 py-1.5 rounded-full text-sm transition-all ${
+                selectedOrg === '' 
+                  ? 'bg-gradient-to-r from-purple-500 to-teal-500 text-white shadow-md' 
+                  : 'bg-white/50 backdrop-blur-sm text-slate-700 hover:bg-white/80 shadow-sm'
+              }`}
+            >
+              All Organizations
+            </button>
+            {ORGANIZATIONS.map(org => (
+              <button
+                key={org}
+                onClick={() => setSelectedOrg(org)}
+                className={`px-3 py-1.5 rounded-full text-sm transition-all ${
+                  selectedOrg === org 
+                    ? 'bg-gradient-to-r from-purple-500 to-teal-500 text-white shadow-md' 
+                    : 'bg-white/50 backdrop-blur-sm text-slate-700 hover:bg-white/80 shadow-sm'
+                }`}
+              >
+                {org}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="flex justify-center items-center py-20 glass-morphism rounded-xl">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-500 to-teal-500 animate-pulse-custom"></div>
+            </div>
+          </div>
+        </div>
+      ) : filteredIdeas.length > 0 ? (
+        <div className="space-y-6">
+          {filteredIdeas.map(idea => (
+            <IdeaCard
+              key={idea.id}
+              idea={idea}
+              onVote={handleVote}
+              onComment={handleComment}
+              onDelete={handleDelete}
+              hasVoted={votedIdeas.has(idea.id)}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20 glass-morphism rounded-xl relative overflow-hidden">
+          <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-purple-100/30 opacity-70 animate-pulse-custom"></div>
+          <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-teal-100/30 opacity-70 animate-pulse-custom" style={{ animationDelay: '1.5s' }}></div>
+          
+          <Vote className="w-16 h-16 text-slate-400/80 mx-auto mb-4" />
+          <h3 className="text-2xl font-medium gradient-text mb-2">No ideas found</h3>
+          <p className="text-slate-600 max-w-md mx-auto">
+            {selectedOrg 
+              ? `There are no ideas for ${selectedOrg} yet. Be the first to submit one!` 
+              : 'There are no ideas yet. Be the first to submit one!'}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
