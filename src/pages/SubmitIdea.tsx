@@ -41,7 +41,7 @@ export default function SubmitIdea() {
           <Sparkles className="w-5 h-5 text-white absolute top-4 right-4 animate-pulse-custom" />
         </div>
         <h2 className="text-3xl font-bold gradient-text mb-2">Share Your Ideas</h2>
-        <p className="text-slate-600 max-w-md mx-auto">Contribute to innovation and make a difference with your creative solutions</p>
+        <p className="text-slate-600 dark:text-slate-300 max-w-md mx-auto">Spark innovation with your brilliant ideas</p>
       </div>
 
       <form onSubmit={handleSubmit} className="glass-morphism p-8 rounded-xl relative">
